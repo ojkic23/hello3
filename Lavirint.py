@@ -10,7 +10,6 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import random
 
-# Dimenzije prozora i labirinta
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 GRID_SIZE = 20
@@ -18,7 +17,7 @@ CELL_SIZE = 30
 NUM_CELLS_X = WINDOW_WIDTH // CELL_SIZE
 NUM_CELLS_Y = WINDOW_HEIGHT // CELL_SIZE
 
-# Definišemo boje
+
 COLOR_WALL = 'black'
 COLOR_PATH = 'white'
 COLOR_PLAYER = 'blue'
@@ -39,44 +38,41 @@ class MazeGame:
         self.create_maze()
         self.draw_maze()
 
-        # Dodajemo kontrole
+       
         self.root.bind("<KeyPress>", self.move_player)
 
-        # Dodajemo brojač poena
         self.score = 0
         self.score_label = tk.Label(root, text=f"Poeni: {self.score}", font=("Arial", 16))
         self.score_label.pack()
 
     def create_maze(self):
-        # Randomizuj zidove i predmete u labirintu
         for x in range(NUM_CELLS_X):
             for y in range(NUM_CELLS_Y):
-                if random.random() < 0.2:  # 20% šanse da bude zid
+                if random.random() < 0.2:  
                     if (x, y) != tuple(self.player_pos) and (x, y) != tuple(self.exit_pos):
                         self.walls.append((x, y))
-                elif random.random() < 0.1:  # 10% šanse da bude predmet
+                elif random.random() < 0.1: 
                     if (x, y) != tuple(self.player_pos) and (x, y) != tuple(self.exit_pos):
                         self.items.append((x, y))
 
     def draw_maze(self):
         self.canvas.delete("all")
-        # Crtamo zidove
         for (x, y) in self.walls:
             self.canvas.create_rectangle(x * CELL_SIZE, y * CELL_SIZE,
                                          (x + 1) * CELL_SIZE, (y + 1) * CELL_SIZE,
                                          fill=COLOR_WALL)
-        # Crtamo predmete
+       
         for (x, y) in self.items:
             self.canvas.create_rectangle(x * CELL_SIZE, y * CELL_SIZE,
                                          (x + 1) * CELL_SIZE, (y + 1) * CELL_SIZE,
                                          fill=COLOR_ITEM)
-        # Crtamo izlaz
+
         ex, ey = self.exit_pos
         self.canvas.create_rectangle(ex * CELL_SIZE, ey * CELL_SIZE,
                                      (ex + 1) * CELL_SIZE, (ey + 1) * CELL_SIZE,
                                      fill=COLOR_EXIT)
 
-        # Crtamo igrača
+       
         px, py = self.player_pos
         self.canvas.create_rectangle(px * CELL_SIZE, py * CELL_SIZE,
                                      (px + 1) * CELL_SIZE, (py + 1) * CELL_SIZE,
@@ -95,19 +91,17 @@ class MazeGame:
         else:
             return
 
-        # Proveravamo da li je nova pozicija unutar granica i da nije zid
+     
         if (0 <= new_pos[0] < NUM_CELLS_X and
             0 <= new_pos[1] < NUM_CELLS_Y and
             tuple(new_pos) not in self.walls):
             self.player_pos = new_pos
-
-            # Proveravamo da li smo stali na predmet
+                
             if tuple(new_pos) in self.items:
                 self.items.remove(tuple(new_pos))
                 self.score += 10
                 self.score_label.config(text=f"Poeni: {self.score}")
                 
-            # Proveravamo da li smo stigli do izlaza
             if tuple(new_pos) == tuple(self.exit_pos):
                 messagebox.showinfo("Pobeda!", "Pobedio si!")
                 self.root.quit()
